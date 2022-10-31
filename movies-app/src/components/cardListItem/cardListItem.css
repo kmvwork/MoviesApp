@@ -1,0 +1,138 @@
+.card {
+    position: relative;
+    max-height: 280px;
+    margin-bottom: 30px;
+}
+
+.card__img img {
+    float: left;
+    margin-right: 20px;
+    max-width: 183px;
+    height: 280px;
+}
+
+.card__info {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.card__description {
+    margin-bottom: 10px;
+}
+
+.card__description-title {
+    max-width: 240px;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.card__description-date {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 22px;
+    color: #827E7E;
+    margin-bottom: 5px;
+}
+
+.card__description-genre-item {
+    display: inline-block;
+    background: #FAFAFA;
+    border: 1px solid #D9D9D9;
+    border-radius: 2px;
+    padding: 2px 4px;
+}
+
+.card__rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    line-height: 22px;
+    color: #000000;
+    border: 2px solid #E9D100;
+    border-radius: 50%;
+}
+
+.card__rating-color3 {
+    border: 2px solid #E90000 !important;
+}
+.card__rating-color5 {
+    border: 2px solid #E97E00 !important;
+}
+.card__rating-color7 {
+    border: 2px solid #E9D100 !important;
+}
+.card__rating-color10 {
+    border: 2px solid #66E900 !important;
+}
+
+.card__text {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.card__text p {
+
+}
+
+.card__star {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 45px;
+    vertical-align: bottom;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.ant-rate-star .ant-rate-star-full {
+    width: 2px !important;
+    margin-right: 0px !important;
+}
+
+@media (max-width: 560px) {
+    .card__img img {
+        width: 130px;
+        height: 280px;
+    }
+        .card__description-title {
+            max-width: 300px;
+        }
+}
+
+@media (max-width: 500px) {
+    .card__img img {
+        width: 60px;
+        height: 90px;
+    }
+
+    .card__description-title {
+        max-width: 200px;
+    }
+
+    .card__info {
+        padding-top: 0;
+    }
+
+    .card__rating {
+        margin-right: 10px;
+    }
+
+    .card__star{
+        margin-right: 10px;
+        bottom: -30px;
+    }
+}
+
+@media (max-width: 40px) {
+
+}

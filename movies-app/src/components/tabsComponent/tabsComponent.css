@@ -1,0 +1,22 @@
+.ant-tabs-nav-list {
+    margin: 0 auto;
+}
+
+.layout__header {
+    width: auto;
+    flex: 0 0 auto;
+    min-height: 70px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.layout__footer {
+    display: flex;
+    justify-content: center;
+}
+
+.layout__content {
+    flex: 1 0 auto;
+}
