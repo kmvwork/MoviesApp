@@ -44,7 +44,6 @@ function CardListItem({ itemProps, getGenresMovie, postMovieRating }) {
   }, [])
 
   function setCurrentRate(event) {
-    console.log('value', event)
     postMovieRating(id, event)
     setRate(event)
   }

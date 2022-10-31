@@ -42,6 +42,10 @@ export default class TabsComponent extends Component {
     this.props.getAllMovies(this.state.value)
   }, 1000)
 
+  onRefresh = () => {
+    this.props.getRatingMovies()
+  }
+
 
   render() {
     const { TabPane } = Tabs
@@ -68,7 +72,7 @@ export default class TabsComponent extends Component {
     } = this.props
 
     return (
-      <Tabs defaultActiveKey='1' destroyInactiveTabPane>
+      <Tabs defaultActiveKey='1' destroyInactiveTabPane onTabClick={this.onRefresh}>
         <TabPane tab='Search' key='1'>
           <header className='layout__header'>
             <Input
