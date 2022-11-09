@@ -15,7 +15,6 @@ export default class App extends Component {
     loading: false,
     error: false,
     searchText: window.localStorage.getItem('searchText') ? JSON.parse(window.localStorage.getItem('searchText')) : '',
-    searchTextEmptyWarning: false,
     totalResults: 0,
     totalResultsRating: 0,
     totalPages: 0,
@@ -31,21 +30,24 @@ export default class App extends Component {
   movieService = new MovieService()
 
   componentDidMount() {
-    this.getGenresList()
-    this.getRatingMovies()
+    if (!!this.state.genresList) {
+      this.getGenresList()
+    }
 
-    if (!this.state.guestSessionId && this.state.guestSessionId !== null && this.state.guestSessionId !== undefined) {
+    if (!this.state.guestSessionId) {
       this.movieService.createGuestSession().then(res => this.setSessionID(res))
     }
-    if (this.state.token !== null) {
+
+    if (!this.state.token) {
       this.movieService.createRequestToken().then(res => this.setToken(res))
     }
     localStorage.setItem('searchText', JSON.stringify(this.state.searchText))
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    localStorage.setItem('films', JSON.stringify(this.state.movies))
-    localStorage.setItem('searchText', JSON.stringify(this.state.searchText))
+    if (!this.state.genresList) {
+      this.getGenresList()
+    }
   }
 
   getRatingMovies = () => {
@@ -87,11 +89,11 @@ export default class App extends Component {
   }
 
   getAllMovies = (text) => {
+    localStorage.setItem('searchText', JSON.stringify(text))
     if (text) {
       this.setState(() => {
-        localStorage.setItem('searchText', JSON.stringify(text))
         return {
-          loading: true
+          loading: true,
         }
       })
       this.movieService.getAllMovies(text)
@@ -108,31 +110,44 @@ export default class App extends Component {
         }))
         .catch(this.onError)
     } else {
+      localStorage.setItem('searchText', JSON.stringify(''))
+      localStorage.setItem('films', JSON.stringify([]))
       this.setState({
         movies: [],
-        searchTextEmptyWarning: true
+        totalResults: 0,
+        totalResultsRating: 0,
+        searchText: text,
       })
-      localStorage.setItem('searchText', JSON.stringify(''))
-      localStorage.setItem('films', JSON.stringify(this.state.movies))
     }
   }
 
   nextPage = (pageNumber) => {
+    this.setState(() => {
+      return {
+        loading: true
+      }
+    })
     this.movieService.getNextPage(this.state.searchText, pageNumber)
       .then(data => {
-        this.setState({ movies: [...data.results], totalResults: data.total_results, currentPage: pageNumber })
-      })
+        this.setState({ movies: [...data.results], totalResults: data.total_results, currentPage: pageNumber, loading: false })
+      }).catch(this.onError)
   }
 
   nextPageRating = (pageNumber) => {
+    this.setState(() => {
+      return {
+        loading: true
+      }
+    })
     this.movieService.getRatingMovies(this.state.guestSessionId, pageNumber)
       .then(data => {
         this.setState({
           moviesRatingFilm: [...data.results],
           totalResultsRating: data.total_results,
-          currentPageRating: pageNumber
+          currentPageRating: pageNumber,
+          loading: false
         })
-      })
+      }).catch(this.onError)
   }
 
   getGenresMovie = (id) => {

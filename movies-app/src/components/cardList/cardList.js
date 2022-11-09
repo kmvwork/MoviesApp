@@ -1,13 +1,24 @@
 import CardListItem from '../cardListItem'
 import ErrorIndicator from '../errorIndicator'
 
-import { Alert, Space, Spin } from 'antd'
+import { Alert} from 'antd'
 
 import './cardList.css'
 import { nanoid } from 'nanoid'
+import Spinner from '../spinner'
 
-function CardList({ movies, loading, error, getGenresMovie, searchTextEmptyWarning, maxIndex, minIndex, postMovieRating }) {
+function CardList({
+                    movies,
+                    loading,
+                    error,
+                    getGenresMovie,
+                    maxIndex,
+                    minIndex,
+                    postMovieRating,
+                    getRatingMovies
+                  }) {
   let elements = <Alert message='Loading...' type='info' />
+
   if (movies.length > 0) {
     // eslint-disable-next-line array-callback-return
     elements = movies.map((item, index) => {
@@ -25,22 +36,14 @@ function CardList({ movies, loading, error, getGenresMovie, searchTextEmptyWarni
     )
   }
 
-  const spinner = <Space size='middle'><Spin size='large' tip='Loading...' /> </Space>
-
-  const noElements = <Alert message='No Movies' type='info' />
-
-  const showSearchWarning = <Alert message='Enter the search text above ↑' type='info' />
-
   const errorMessage = <ErrorIndicator />
 
-  const showElements = elements.length > 0 && loading === false ? elements : noElements
-  const showSpinner = loading && spinner
+  const showElements = elements.length && loading === false > 0  ? elements : null
+  const showSpinner = loading && <Spinner/>
   const showError = error && errorMessage
-  const searchTextEmptyWarningShow = searchTextEmptyWarning && showSearchWarning
 
   return (
     <div className='cardList'>
-      {searchTextEmptyWarningShow}
       {showElements}
       {showSpinner}
       {showError}

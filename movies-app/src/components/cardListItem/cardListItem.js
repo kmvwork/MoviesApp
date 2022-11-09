@@ -5,36 +5,39 @@ import { nanoid } from 'nanoid'
 import noPoster from '../../img/noPoster.JPEG'
 import './cardListItem.css'
 import { format } from 'date-fns'
-import { useEffect, useState } from 'react'
+import {useLayoutEffect, useMemo, useState } from 'react'
+import Spinner from '../spinner'
 
 function CardListItem({ itemProps, getGenresMovie, postMovieRating }) {
-  const { title, release_date, overview, poster_path, genre_ids, id } = itemProps
+  const { title, release_date, overview, poster_path, genre_ids, id, vote_average } = itemProps
 
   const [classNames, setClassNames] = useState('')
   const [rate, setRate] = useState()
+  const [loadingImg, setLoadingImg] = useState()
+  const [url, setUrl] = useState()
 
   let totalClassRate = 'card__rating ' + classNames
 
-  useEffect(() => {
-    if (rate <= 3) {
+  useLayoutEffect(() => {
+    if (vote_average <= 3) {
       setClassNames('card__rating-color3')
       return
     }
-    if (rate <= 5) {
+    if (vote_average <= 5) {
       setClassNames('card__rating-color5')
       return
     }
-    if (rate <= 7) {
+    if (vote_average <= 7) {
       setClassNames('card__rating-color7')
       return
     }
-    if (rate <= 10) {
+    if (vote_average <= 10) {
       setClassNames('card__rating-color10')
     }
 
-  }, [rate])
+  }, [vote_average])
 
-  useEffect(() => {
+  useMemo(() => {
     let localRate = localStorage.getItem(id)
     if (localRate) {
       setRate(localRate)
@@ -42,6 +45,27 @@ function CardListItem({ itemProps, getGenresMovie, postMovieRating }) {
       setRate()
     }
   }, [])
+
+  const fetchImage = async (poster_path) => {
+    setLoadingImg(true)
+    if (poster_path === null) {
+      setUrl('../../img/noPoster.JPEG')
+      return
+    }
+    const res = await fetch(`https://image.tmdb.org/t/p/original/${poster_path}`);
+    const imageBlob = await res.blob();
+    const imageObjectURL = URL.createObjectURL(imageBlob);
+    setLoadingImg(false)
+    setUrl(imageObjectURL)
+  };
+
+  useMemo(() => {
+    if (poster_path === null) {
+      setUrl('../../img/noPoster.JPEG')
+      return
+    }
+    fetchImage(poster_path)
+  }, [poster_path])
 
   function setCurrentRate(event) {
     postMovieRating(id, event)
@@ -55,19 +79,19 @@ function CardListItem({ itemProps, getGenresMovie, postMovieRating }) {
     )
   })
 
-  const posterImg = poster_path ? <img src={`https://image.tmdb.org/t/p/original/${poster_path}`} alt={title} /> :
-    <img src={noPoster} alt='No poster' />
+  const posterImg = poster_path ? <img src={url} alt={title} /> : <img src={noPoster} alt='No poster' />
+
 
   const releaseFormat = release_date ? format(Date.parse(release_date), 'MMMM e, y') :
     <p>The release date is unknown</p>
-
-  const viewRate = rate ? <div className={totalClassRate}>{rate}</div> : null
 
   return (
     <>
       <div className='card' key={nanoid()}>
         <div className='card__img'>
-          {posterImg}
+          {
+            loadingImg ? <Spinner /> : posterImg
+          }
         </div>
         <div className='card__info'>
           <div className='card__description'>
@@ -78,10 +102,10 @@ function CardListItem({ itemProps, getGenresMovie, postMovieRating }) {
               {releaseFormat}
             </div>
             <div className='card__description-genre'>
-              {actions}
+              {actions.length !== 0 ? actions : null}
             </div>
           </div>
-          {viewRate}
+          <div className={totalClassRate}>{vote_average.toFixed(0)}</div>
         </div>
         <div className='card__text'>
           <p>{kitCut(overview, 250)}</p>

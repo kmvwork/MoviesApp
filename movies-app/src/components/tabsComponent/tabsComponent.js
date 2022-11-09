@@ -13,39 +13,39 @@ export default class TabsComponent extends Component {
   constructor() {
     super()
     this.state = {
-      value: ''
+      value: '',
+      showPaginationMovies: true,
+      showPaginationMoviesRating: true,
+      currentPage: 1
     }
   }
 
   componentDidMount() {
     if (this.props.searchText) {
       this.setState(() => {
-        return { value: this.props.searchText }
+        return { value: this.props.searchText, currentPage: 1 }
       })
-    }
-    this.props.getRatingMovies()
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.value !== this.state.value) {
       this.onStartSearch()
     }
   }
 
   onChange = (event) => {
+    console.log('onChange tabsComponent')
     this.setState({
       value: event.target.value
     })
+    this.onStartSearch()
   }
 
   onStartSearch = _debounce(() => {
     this.props.getAllMovies(this.state.value)
-  }, 1000)
+  }, 1500)
 
-  onRefresh = () => {
-    this.props.getRatingMovies()
+  onRefresh = (activeKey) => {
+    if (activeKey === '2') {
+      this.props.getRatingMovies()
+    }
   }
-
 
   render() {
     const { TabPane } = Tabs
@@ -68,11 +68,18 @@ export default class TabsComponent extends Component {
       pagesRating,
       totalRating,
       currentPageRating,
-      nextPageRating
+      nextPageRating,
+      getRatingMovies
     } = this.props
 
+    if (total.length === 0) {
+      this.setState(({
+        showPaginationMovies: false
+      }))
+    }
+
     return (
-      <Tabs defaultActiveKey='1' destroyInactiveTabPane onTabClick={this.onRefresh}>
+      <Tabs defaultActiveKey='1' onTabClick={(activeKey) => this.onRefresh(activeKey)}>
         <TabPane tab='Search' key='1'>
           <header className='layout__header'>
             <Input
@@ -89,18 +96,20 @@ export default class TabsComponent extends Component {
               error={error}
               maxIndex={maxIndex}
               minIndex={minIndex}
-              searchTextEmptyWarning={searchTextEmptyWarning}
               getGenresMovie={getGenresMovie}
               postMovieRating={postMovieRating}
             />
           </main>
           <footer className='layout__footer'>
-            <PaginationComponent
-              total={total}
-              pages={pages}
-              nextPage={nextPage}
-              currentPage={currentPage}
-            />
+            {
+              this.state.showPaginationMovies && <PaginationComponent
+                total={total}
+                pages={pages}
+                nextPage={nextPage}
+                current={currentPage}
+                defaultCurrent={currentPage}
+              />
+            }
           </footer>
         </TabPane>
         <TabPane tab='Rated' key='2'>
@@ -114,6 +123,7 @@ export default class TabsComponent extends Component {
               searchTextEmptyWarning={searchTextEmptyWarning}
               getGenresMovie={getGenresMovie}
               postMovieRating={postMovieRating}
+              getRatingMovies={this.getRatingMovies}
             />
           </main>
           <footer className='layout__footer'>
@@ -122,12 +132,11 @@ export default class TabsComponent extends Component {
               pages={pagesRating}
               nextPage={nextPageRating}
               currentPage={currentPageRating}
+              defaultCurrent={currentPageRating}
             />
           </footer>
         </TabPane>
       </Tabs>
     )
   }
-
-
 }
